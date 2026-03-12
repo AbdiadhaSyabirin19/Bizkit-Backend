@@ -19,15 +19,15 @@ func SetupRouter() *gin.Engine {
 		AllowCredentials: true,
 	}))
 
-	r.GET("/ping", func(c *gin.Context) {
-		c.JSON(200, gin.H{"message": "pong"})
-	})
-	r.HEAD("/ping", func(c *gin.Context) {
-		c.Status(200)
-	})
-
 	api := r.Group("/api")
 	{
+		api.GET("/ping", func(c *gin.Context) {
+			c.JSON(200, gin.H{"message": "pong"})
+		})
+		api.HEAD("/ping", func(c *gin.Context) {
+			c.Status(200)
+		})
+
 		// Auth (public)
 		auth := api.Group("/auth")
 		{
