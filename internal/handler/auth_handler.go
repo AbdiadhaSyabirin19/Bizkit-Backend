@@ -42,3 +42,21 @@ func GetMe(c *gin.Context) {
 		"user":    user,
 	})
 }
+
+func ChangePassword(c *gin.Context) {
+	userID := c.MustGet("user_id").(uint)
+
+	var req service.ChangePasswordRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Input tidak valid"})
+		return
+	}
+
+	err := service.ChangePassword(userID, req)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Password berhasil diperbarui"})
+}

@@ -29,6 +29,11 @@ type UpdateUserRequest struct {
 	CanAccessCenter bool   `json:"can_access_center"`
 }
 
+type ChangePasswordRequest struct {
+	OldPassword string `json:"oldPassword" binding:"required"`
+	NewPassword string `json:"newPassword" binding:"required"`
+}
+
 func GetAllUsers(search string) ([]model.User, error) {
 	return repository.GetAllUsers(search)
 }
@@ -121,4 +126,24 @@ func DeleteUser(id uint, currentUserID uint) error {
 	}
 
 	return repository.DeleteUser(id)
+}
+
+func ChangePassword(userID uint, req ChangePasswordRequest) error {
+	user, err := repository.GetUserByID(userID)
+	if err != nil {
+		return errors.New("User tidak ditemukan")
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.OldPassword))
+	if err != nil {
+		return errors.New("Password lama salah")
+	}
+
+	hashed, err := bcrypt.GenerateFromPassword([]byte(req.NewPassword), bcrypt.DefaultCost)
+	if err != nil {
+		return errors.New("Gagal memproses password baru")
+	}
+
+	user.Password = string(hashed)
+	return repository.UpdateUser(user)
 }

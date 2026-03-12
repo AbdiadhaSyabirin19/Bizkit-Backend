@@ -39,6 +39,7 @@ func SetupRouter() *gin.Engine {
 		protected.Use(middleware.AuthMiddleware())
 		{
 			protected.GET("/me", handler.GetMe)
+			protected.PUT("/auth/change-password", handler.ChangePassword)
 
 			// Category
 			protected.GET("/categories", handler.GetAllCategories)
